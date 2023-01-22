@@ -1,0 +1,199 @@
+#+TITLE: TAL's Doom Emacs Config
+#+AUTHOR: TAL
+#+DESCRIPTION: TAL's personal Doom Emacs config
+#+PROPERTY: header-args :tangle config.el
+#+auto_tangle: t
+
+* TABLE OF CONTENTS :toc:
+- [[#general-information][GENERAL-INFORMATION]]
+  - [[#user-information][USER-INFORMATION]]
+- [[#theming][THEMING]]
+  - [[#doom-theme][DOOM-THEME]]
+  - [[#rainbow-mode][RAINBOW-MODE]]
+  - [[#ligature][LIGATURE]]
+- [[#ranger][RANGER]]
+  - [[#key-mapping][KEY-MAPPING]]
+  - [[#openwith][OPENWITH]]
+- [[#org-mode][ORG-MODE]]
+  - [[#dt-org-theme][DT-ORG-THEME]]
+  - [[#auto-tangle][AUTO-TANGLE]]
+- [[#rust][RUST]]
+  - [[#racer][RACER]]
+
+* GENERAL-INFORMATION
+ Whenever you reconfigure a package, make sure to wrap your config in an
+ `after!' block, otherwise Doom's defaults may override your settings. E.g.
+
+   (after! PACKAGE
+     (setq x y))
+
+ The exceptions to this rule:
+
+   - Setting file/directory variables (like `org-directory')
+   - Setting variables which explicitly tell you to set them before their
+     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
+   - Setting doom variables (which start with 'doom-' or '+').
+
+ Here are some additional functions/macros that will help you configure Doom.
+
+ - `load!' for loading external *.el files relative to this one
+ - `use-package!' for configuring packages
+ - `after!' for running code after a package has loaded
+ - `add-load-path!' for adding directories to the `load-path', relative to
+   this file. Emacs searches the `load-path' when you load packages with
+   `require' or `use-package'.
+ - `map!' for binding new keys
+
+** USER-INFORMATION
+Some functionality uses this to identify you, e.g. GPG configuration, email
+clients, file templates and snippets. It is optional.
+#+begin_src emacs-lisp
+(setq user-full-name "tadz"
+      user-mail-address "tadz@mail.org")
+#+end_src
+
+* THEMING
+display-line-numbers-type determines the style of line numbers in effect. If set to `nil', line
+numbers are disabled. For relative line numbers, set this to `relative'.
+
+** DOOM-THEME
+#+begin_src emacs-lisp
+(setq doom-font (font-spec :family "Cascadia Code" :size 18 :weight 'medium))
+(setq doom-theme 'doom-kanagawa)
+(setq display-line-numbers-type t)
+#+end_src
+
+** RAINBOW-MODE
+Rainbox mode displays the actual color for any hex value color.  It’s such a nice feature that I wanted it turned on all the time, regardless of what mode I am in. The
+following creates a global minor mode for rainbow-mode and enables it (exception: org-agenda-mode since rainbow-mode destroys all highlighting in org-agenda).
+#+begin_src emacs-lisp
+(rainbow-mode t)
+#+end_src
+
+** LIGATURE
+fancy font stuff
+#+begin_src emacs-lisp
+(use-package ligature
+  :config
+  ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures 'prog-mode '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+                                       ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+                                       "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+                                       "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+                                       "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+                                       "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+                                       "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+                                       "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+                                       ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+                                       "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+                                       "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+                                       "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+                                       "\\\\" "://"))
+  ;; Enables ligature checks globally in all buffers. You can also do it
+  ;; per mode with `ligature-mode'.
+  (global-ligature-mode t))
+#+end_src
+* RANGER
+This is a minor mode that runs within dired, it emulates many of ranger's features. This minor mode shows a stack of parent directories, and updates the parent buffers, while
+you're navigating the file system. The preview window takes some of the ideas from Peep-Dired, to display previews for the selected files, in the primary dired buffer.
+
+** KEY-MAPPING
+#+begin_src emacs-lisp
+(ranger-override-dired-mode t)
+(setq ranger-excluded-extensions '("mpg" "mpeg" "mp3" "mp4" "avi" "wmv" "wav" "mov" "flv" "ogm" "ogg" "mkv" "webm"
+                                   "xbm" "pbm" "pgm" "ppm" "pnm" "png" "gif" "bmp" "tif" "jpeg" "jpg"
+                                   "doc" "xls" "ppt" "odt" "ods" "odg" "odp"
+                                   "pdf" "ps" "ps.gz" "dvi"))
+
+(map! :leader
+      :desc "launch Ranger"
+      "r" #'ranger)
+
+(map! :leader
+      :desc "close Ranger"
+      "k" #'ranger-close)
+#+end_src
+
+** OPENWITH
+#+begin_src emacs-lisp
+(use-package! openwith
+  :ensure t
+  :hook (ranger-mode . openwith-mode)
+  :hook (after-change-major-mode-hook . openwith-mode)
+  :config
+    (setq openwith-associations
+            (list
+             (list (openwith-make-extension-regexp
+                    '("mpg" "mpeg" "mp3" "mp4"
+                      "avi" "wmv" "wav" "mov" "flv"
+                      "ogm" "ogg" "mkv" "webm"))
+                   "mpv"
+                   '(file))
+             (list (openwith-make-extension-regexp
+                    '("xbm" "pbm" "pgm" "ppm" "pnm"
+                      "png" "gif" "bmp" "tif" "jpeg" "jpg"))
+                   "imv-dir"
+                   '(file))
+             (list (openwith-make-extension-regexp
+                    '("doc" "xls" "ppt" "odt" "ods" "odg" "odp"))
+                   "libreoffice"
+                   '(file))
+             '("\\.lyx" "lyx" (file))
+             '("\\.chm" "kchmviewer" (file))
+             (list (openwith-make-extension-regexp
+                    '("pdf" "ps" "ps.gz" "dvi"))
+                   "evince"
+                   '(file))
+             )))
+;;      (setq openwith-mode t))
+#+end_src
+
+* ORG-MODE
+Org is a highly flexible structured plain text file format, composed of a few simple, yet versatile, structures — constructed to be both simple enough for the novice and powerful
+enough for the expert.
+** DT-ORG-THEME
+#+begin_src emacs-lisp
+(after! org
+  (setq org-directory "~/Projects/Org/"
+        org-agenda-files '("~/Projects/Org/agenda.org")
+        org-default-notes-file (expand-file-name "notes.org" org-directory)
+        org-ellipsis " ▼ "
+        org-superstar-headline-bullets-list '("◉" "●" "○" "◆" "●" "○" "◆")
+        org-superstar-itembullet-alist '((?+ . ?➤) (?- . ?✦)) ; changes +/- symbols in item lists
+        org-log-done 'time
+        org-hide-emphasis-markers t
+        org-table-convert-region-max-lines 20000
+        org-todo-keywords        ; This overwrites the default Doom org-todo-keywords
+          '((sequence
+             "TODO(t)"           ; A task that is ready to be tackled
+             "BLOG(b)"           ; Blog writing assignments
+             "GYM(g)"            ; Things to accomplish at the gym
+             "PROJ(p)"           ; A project that contains other tasks
+             "VIDEO(v)"          ; Video assignments
+             "WAIT(w)"           ; Something is holding up this task
+             "|"                 ; The pipe necessary to separate "active" states and "inactive" states
+             "DONE(d)"           ; Task has been completed
+             "CANCELLED(c)" )))) ; Task has been cancelled
+#+end_src
+
+** AUTO-TANGLE
+#+begin_src emacs-lisp
+(use-package! org-auto-tangle
+  :defer t
+  :hook (org-mode . org-auto-tangle-mode)
+  :config
+  (setq org-auto-tangle-default t))
+#+end_src
+
+* RUST
+rust.unwrap().unwrap()
+** RACER
+#+begin_src emacs-lisp
+(add-hook 'rust-mode-hook #' racer-mode)
+(add-hook 'racer-mode-hook #' eldoc-mode)
+#+end_src
