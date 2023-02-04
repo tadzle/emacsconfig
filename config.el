@@ -1,8 +1,15 @@
-(setq user-full-name "tadz"
+﻿(setq user-full-name "tadz"
       user-mail-address "tadz@mail.org")
 
-(setq doom-font (font-spec :family "Cascadia Code" :size 18 :weight 'medium))
-(setq doom-theme 'doom-kanagawa)
+(setq doom-theme 'doom-kanagawa
+      doom-font (font-spec :family "Cascadia Code" :size 18 :weight 'medium)
+      doom-variable-pitch-font (font-spec :family "Lobster" :size 18))
+(after! doom-themes
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t))
+(custom-set-faces!
+  '(font-lock-comment-face :slant italic)
+  '(font-lock-keyword-face :slant italic))
 (setq display-line-numbers-type t)
 
 (rainbow-mode t)
@@ -56,7 +63,7 @@
              (list (openwith-make-extension-regexp
                     '("mpg" "mpeg" "mp3" "mp4"
                       "avi" "wmv" "wav" "mov" "flv"
-                      "ogm" "ogg" "mkv" "webm"))
+                      "ogm" "ogg" "mkv" "webm" "m4v"))
                    "mpv"
                    '(file))
              (list (openwith-make-extension-regexp

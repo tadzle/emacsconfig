@@ -63,7 +63,6 @@
 ;; rust stuff
 (package! racer)
 (package! cargo)
-(package! racer)
 
 ;; debugger
 (package! realgud)
