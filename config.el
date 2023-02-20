@@ -2,7 +2,7 @@
       user-mail-address "tadz@mail.org")
 
 (setq doom-theme 'doom-kanagawa
-      doom-font (font-spec :family "Cascadia Code" :size 18 :weight 'medium)
+      doom-font (font-spec :family "Delugia" :size 18)
       doom-variable-pitch-font (font-spec :family "Lobster" :size 18))
 (after! doom-themes
   (setq doom-themes-enable-bold t
@@ -89,7 +89,7 @@
         org-agenda-files '("~/Projects/Org/agenda.org")
         org-default-notes-file (expand-file-name "notes.org" org-directory)
         org-ellipsis " ▼ "
-        org-superstar-headline-bullets-list '("◉" "●" "○" "◆" "●" "○" "◆")
+        org-superstar-headline-bullets-list '("" "" "" "")
         org-superstar-itembullet-alist '((?+ . ?➤) (?- . ?✦)) ; changes +/- symbols in item lists
         org-log-done 'time
         org-hide-emphasis-markers t
@@ -98,9 +98,7 @@
           '((sequence
              "TODO(t)"           ; A task that is ready to be tackled
              "BLOG(b)"           ; Blog writing assignments
-             "GYM(g)"            ; Things to accomplish at the gym
              "PROJ(p)"           ; A project that contains other tasks
-             "VIDEO(v)"          ; Video assignments
              "WAIT(w)"           ; Something is holding up this task
              "|"                 ; The pipe necessary to separate "active" states and "inactive" states
              "DONE(d)"           ; Task has been completed
@@ -111,6 +109,9 @@
   :hook (org-mode . org-auto-tangle-mode)
   :config
   (setq org-auto-tangle-default t))
+
+(setq pixel-scroll-precision-mode 1)
+(setq pixel-scroll-precision-use-momentum 1)
 
 (add-hook 'rust-mode-hook #' racer-mode)
 (add-hook 'racer-mode-hook #' eldoc-mode)

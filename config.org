@@ -1,4 +1,4 @@
-#+TITLE: TAL's Doom Emacs Config
+#+TITLE: Tadz's Doom Emacs Config
 #+AUTHOR: TAL
 #+DESCRIPTION: TAL's personal Doom Emacs config
 #+PROPERTY: header-args :tangle config.el
@@ -15,8 +15,10 @@
   - [[#key-mapping][KEY-MAPPING]]
   - [[#openwith][OPENWITH]]
 - [[#org-mode][ORG-MODE]]
-  - [[#dt-org-theme][DT-ORG-THEME]]
+  - [[#org-theme][ORG-THEME]]
   - [[#auto-tangle][AUTO-TANGLE]]
+- [[#fancy-stuff][FANCY-STUFF]]
+  - [[#good-scroll][GOOD-SCROLL]]
 - [[#rust][RUST]]
   - [[#racer][RACER]]
 
@@ -59,7 +61,7 @@ numbers are disabled. For relative line numbers, set this to `relative'.
 ** DOOM-THEME
 #+begin_src emacs-lisp
 (setq doom-theme 'doom-kanagawa
-      doom-font (font-spec :family "Cascadia Code" :size 18 :weight 'medium)
+      doom-font (font-spec :family "Delugia" :size 18)
       doom-variable-pitch-font (font-spec :family "Lobster" :size 18))
 (after! doom-themes
   (setq doom-themes-enable-bold t
@@ -163,14 +165,14 @@ you're navigating the file system. The preview window takes some of the ideas fr
 * ORG-MODE
 Org is a highly flexible structured plain text file format, composed of a few simple, yet versatile, structures — constructed to be both simple enough for the novice and powerful
 enough for the expert.
-** DT-ORG-THEME
+** ORG-THEME
 #+begin_src emacs-lisp
 (after! org
   (setq org-directory "~/Projects/Org/"
         org-agenda-files '("~/Projects/Org/agenda.org")
         org-default-notes-file (expand-file-name "notes.org" org-directory)
         org-ellipsis " ▼ "
-        org-superstar-headline-bullets-list '("◉" "●" "○" "◆" "●" "○" "◆")
+        org-superstar-headline-bullets-list '("" "" "" "")
         org-superstar-itembullet-alist '((?+ . ?➤) (?- . ?✦)) ; changes +/- symbols in item lists
         org-log-done 'time
         org-hide-emphasis-markers t
@@ -179,9 +181,7 @@ enough for the expert.
           '((sequence
              "TODO(t)"           ; A task that is ready to be tackled
              "BLOG(b)"           ; Blog writing assignments
-             "GYM(g)"            ; Things to accomplish at the gym
              "PROJ(p)"           ; A project that contains other tasks
-             "VIDEO(v)"          ; Video assignments
              "WAIT(w)"           ; Something is holding up this task
              "|"                 ; The pipe necessary to separate "active" states and "inactive" states
              "DONE(d)"           ; Task has been completed
@@ -197,6 +197,13 @@ enough for the expert.
   (setq org-auto-tangle-default t))
 #+end_src
 
+* FANCY-STUFF
+** GOOD-SCROLL
+Attempt at good pixel-based smooth scrolling in Emacs
+#+begin_src emacs-lisp
+(setq pixel-scroll-precision-mode 1)
+(setq pixel-scroll-precision-use-momentum 1)
+#+end_src
 * RUST
 rust.unwrap().unwrap()
 ** RACER
